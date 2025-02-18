@@ -2,6 +2,7 @@ const express = require('express'); //on importe le module express pour gérer l
 const favicon = require('serve-favicon'); //on importe le module serve-favicon pour gérer les favicons
 const bodyParser = require('body-parser'); //on importe le module body-parser pour gérer les requêtes POST
 const sequelize= require('./src/db/sequelize'); //on importe le module sequelize pour gérer la base de données
+const cors = require('cors'); //on importe le module cors pour gérer les requêtes cross-origin (une sorte de sécurité)
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -11,11 +12,12 @@ const port = process.env.PORT || 3001;
 app
     .use(favicon(__dirname + '/favicon.ico'))
     .use(bodyParser.json())
+    .use(cors())
 
 sequelize.initDb()
 
 app.get('/', (req, res) => {
-    res.json('Hello Heroku! 😊👌👌')
+    res.json('Hello world! 😊👌👌')
 })
 // ici nous placons nos futures points de terminaison
 require('./src/routes/findAllPokemons')(app);

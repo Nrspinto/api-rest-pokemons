@@ -7,14 +7,28 @@ const pokemons = require('./mock-pokemon')
 const bcrypt = require('bcrypt') // on importe bcrypt pour crypter le mot de passe
 
 // on se connecte à la base de données pokedex
-const sequelize = new Sequelize('pokedex', 'root', '', { 
-  host: 'localhost',
-  dialect: 'mariadb',
-  dialectOptions: {
+let sequelize 
+
+if (process.env.NODE_ENV === 'production') {
+  sequelize = new Sequelize('pokedex', 'root', '', { 
+    host: 'localhost',
+    dialect: 'mariadb',
+    dialectOptions: {
+      timezone: 'Etc/GMT-2',
+    },
+    logging: false
+  })
+
+}else{
+  sequelize = new Sequelize('pokedex', 'root', '', { 
+    host: 'localhost',
+    dialect: 'mariadb',
+    dialectOptions: {
     timezone: 'Etc/GMT-2',
   },
   logging: false
 })
+}
 
 // on crée le modèle Pokemon
 const Pokemon = PokemonModel(sequelize, DataTypes)
@@ -22,7 +36,7 @@ const User = UserModel(sequelize, DataTypes)
 
 // on exporte le modèle Pokemon
 const initDb = () => {
-  return sequelize.sync({force: true}).then(_ => {
+  return sequelize.sync({force: true}).then(_ => {  // force: true permet de recréer la base de données à chaque fois; à enlever en production ! (mettre : sync())
     pokemons.map(pokemon => {
       Pokemon.create({
         name: pokemon.name,
